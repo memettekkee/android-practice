@@ -14,10 +14,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
+
+    var postsList = ArrayList<Response>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        showPosts()
     }
 
     fun showPosts(){
@@ -35,9 +39,20 @@ class MainActivity : AppCompatActivity() {
                 call: Call<List<Response>>,
                 response: retrofit2.Response<List<Response>>
             ) {
-                
-            }
+                if(!response.isSuccessful){
+                    binding.User.text = "error"
+                    binding.Id.text = "error"
+                    binding.Title.text = "error"
+                    binding.Body.text = "error"
+                }
 
+                postsList = response.body() as ArrayList<Response>
+
+                binding.User.text = postsList[0].userId.toString()
+                binding.Id.text = postsList[0].id.toString()
+                binding.Title.text = postsList[0].title
+                binding.Body.text = postsList[0].body
+            }
             override fun onFailure(call: Call<List<Response>>, t: Throwable) {
                 Toast.makeText(applicationContext,t.localizedMessage,Toast.LENGTH_SHORT).show()
             }
